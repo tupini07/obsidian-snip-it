@@ -7,6 +7,7 @@ import {
 	PluginSettingTab,
 	Setting,
 } from "obsidian"
+import { findSnippet } from "./snippetUtils";
 
 export default class TextSnippets extends Plugin {
 	settings: TextSnippetsSettings
@@ -138,40 +139,9 @@ export default class TextSnippets extends Plugin {
 		}
 	}
 
-	findSnippet(
-		editor: CodeMirror.Editor,
-		cursorOrig: CodeMirror.Position,
-		cursor: CodeMirror.Position
-	): string {
-		var selectedText = this.getSelectedText(editor)
-		var wordDelimiters = Array.from(this.settings.wordDelimiters)
-		var selectedWoSpaces = "" + selectedText.split(" ").join("")
-		var newStr = ""
-		// without this finds next stop everywhere in file
-		// if (selectedWoSpaces == '' || (selectedWoSpaces.length > 0 && wordDelimiters.indexOf(selectedWoSpaces[0]) >= 0 && cursorOrig.ch == cursor.ch)) {
-		// editor.execCommand('goWordLeft');
-		// editor.execCommand('goWordLeft');
-		// selectedText = this.getSelectedText(editor);
-		// var cursor = editor.getCursor('from');
-		// }
-
-		const snippets = this.settings.snippets
-		for (const snippet of snippets) {
-			const [pattern, replacement] = snippet.split(" : ")
-			if (this.settings.isRegex) {
-				const regex = new RegExp(pattern)
-				if (regex.test(selectedText)) {
-					newStr = selectedText.replace(regex, replacement)
-					break
-				}
-			} else {
-				if (selectedText === pattern) {
-					newStr = replacement
-					break
-				}
-			}
-		}
-		return newStr
+	findSnippet(editor: CodeMirror.Editor, cursorOrig: CodeMirror.Position, cursor: CodeMirror.Position): string {
+		const selectedText = this.getSelectedText(editor);
+		return findSnippet(selectedText, this.settings.snippets, this.settings.isRegex);
 	}
 
 	calculateCursorEndPos(
