@@ -1,4 +1,4 @@
-import { findSnippet } from './snippetUtils';
+import { findSnippet, updateSplit } from './snippetUtils';
 
 describe('findSnippet', () => {
     it('should return the replacement for a matching snippet without regex', () => {
@@ -47,5 +47,39 @@ describe('findSnippet', () => {
         const isRegex = true;
         const result = findSnippet(selectedText, snippets, isRegex);
         expect(result).toBe('universe');
+    });
+});
+
+describe('updateSplit', () => {
+    it('should split snippets file correctly without regex', () => {
+        const newlineSymbol = '$nl$';
+        const snippetsFile = 'snippet1 : result1$nl$snippet2 : result2';
+        const isRegex = false;
+        const result = updateSplit(newlineSymbol, snippetsFile, isRegex);
+        expect(result).toEqual(['snippet1 : result1', 'snippet2 : result2']);
+    });
+
+    it('should split snippets file correctly with regex', () => {
+        const newlineSymbol = '$nl$';
+        const snippetsFile = 'snippet1 : result1$nl$snippet2 : result2';
+        const isRegex = true;
+        const result = updateSplit(newlineSymbol, snippetsFile, isRegex);
+        expect(result).toEqual(['snippet1 : result1', 'snippet2 : result2']);
+    });
+
+    it('should handle empty lines correctly', () => {
+        const newlineSymbol = '$nl$';
+        const snippetsFile = 'snippet1 : result1$nl$$nl$snippet2 : result2';
+        const isRegex = false;
+        const result = updateSplit(newlineSymbol, snippetsFile, isRegex);
+        expect(result).toEqual(['snippet1 : result1', 'snippet2 : result2']);
+    });
+
+    it('should handle special characters in newline symbol', () => {
+        const newlineSymbol = '$nl$';
+        const snippetsFile = 'snippet1 : result1$nl$snippet2 : result2';
+        const isRegex = false;
+        const result = updateSplit(newlineSymbol, snippetsFile, isRegex);
+        expect(result).toEqual(['snippet1 : result1', 'snippet2 : result2']);
     });
 });
