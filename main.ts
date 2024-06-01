@@ -1,6 +1,6 @@
 import { App, Plugin, PluginSettingTab, Setting } from "obsidian"
-import { isWord } from "./utils"
 import { findSnippet, updateSplit } from "./snippetUtils"
+import { SnippetsWordAt } from "./wordUtils"
 
 export default class TextSnippets extends Plugin {
 	settings: TextSnippetsSettings
@@ -70,23 +70,12 @@ export default class TextSnippets extends Plugin {
 		}
 	}
 
-	SnippetsWordAt(cm: CodeMirror.Editor, pos: CodeMirror.Position): any {
-		var start = pos.ch,
-			end = start,
-			line = cm.getLine(pos.line)
-		while (start && isWord(line.charAt(start - 1), this.settings.wordDelimiters)) --start
-		while (end < line.length && isWord(line.charAt(end), this.settings.wordDelimiters)) ++end
-		var fr = { line: pos.line, ch: start }
-		var t = { line: pos.line, ch: end }
-		return { from: fr, to: t, word: line.slice(start, end) }
-	}
-
 	getWordBoundaries(editor: CodeMirror.Editor) {
 		var cursor = editor.getCursor()
 		var line = cursor.line
 		var ch = cursor.ch
 
-		var word = this.SnippetsWordAt(editor, cursor)
+		var word = SnippetsWordAt(editor, cursor, this.settings.wordDelimiters)
 		var wordStart = word.from.ch
 		var wordEnd = word.to.ch
 
