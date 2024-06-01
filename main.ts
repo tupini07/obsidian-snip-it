@@ -44,6 +44,15 @@ export default class TextSnippets extends Plugin {
 			// the callback has to be called through another function in order for 'this' to work
 			cm.on("keydown", (cm, event) => this.handleKeyDown(cm, event))
 		})
+		new Setting(containerEl)
+			.setName("Use Regex for Snippets")
+			.setDesc("Enable this to use regex patterns for snippet matching.")
+			.addToggle((toggle) =>
+				toggle.setValue(this.plugin.settings.isRegex).onChange(async (value) => {
+					this.plugin.settings.isRegex = value
+					await this.plugin.saveSettings()
+				})
+			)
 	}
 
 	async onunload() {
