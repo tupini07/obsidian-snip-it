@@ -1,13 +1,5 @@
-import {
-	App,
-	Editor,
-	MarkdownView,
-	// Notice,
-	Plugin,
-	PluginSettingTab,
-	Setting,
-} from "obsidian"
-import { findSnippet } from "./snippetUtils";
+import { App, Plugin, PluginSettingTab, Setting } from "obsidian"
+import { findSnippet } from "./snippetUtils"
 
 export default class TextSnippets extends Plugin {
 	settings: TextSnippetsSettings
@@ -139,11 +131,6 @@ export default class TextSnippets extends Plugin {
 		}
 	}
 
-	findSnippet(editor: CodeMirror.Editor, cursorOrig: CodeMirror.Position, cursor: CodeMirror.Position): string {
-		const selectedText = this.getSelectedText(editor);
-		return findSnippet(selectedText, this.settings.snippets, this.settings.isRegex);
-	}
-
 	calculateCursorEndPos(
 		nStr: string,
 		cursor: CodeMirror.Position,
@@ -199,8 +186,10 @@ export default class TextSnippets extends Plugin {
 		var pasteSymbol = this.settings.pasteSymbol
 		var stopFound = false
 		var newStr = ""
-
-		newStr = this.findSnippet(editor, cursorOrig, cursor)
+		const selectedText = this.getSelectedText(editor)
+		const snippets = this.settings.snippets
+		const isRegex = this.settings.isRegex
+		newStr = findSnippet(selectedText, snippets, isRegex)
 		cursor = editor.getCursor("from")
 
 		//proceed Tab and Spacebar
@@ -350,6 +339,7 @@ interface TextSnippetsSettings {
 	useSpace: boolean
 	wordDelimiters: string
 	isWYSIWYG: boolean
+	isRegex: boolean
 }
 
 const DEFAULT_SETTINGS: TextSnippetsSettings = {
@@ -364,6 +354,7 @@ const DEFAULT_SETTINGS: TextSnippetsSettings = {
 	useSpace: false,
 	wordDelimiters: "$()[]{}<>,.!?;:'\"\\/",
 	isWYSIWYG: false,
+	isRegex: false,
 }
 
 class TextSnippetsSettingsTab extends PluginSettingTab {
