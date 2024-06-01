@@ -30,8 +30,8 @@ export function updateSplit(
 	nlSymb = nlSymb.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&")
 	const rg = nlSymb + "(?=\\n)|" + nlSymb
 	const regex = new RegExp(rg, "g")
-	let splited = snippets_file.split(regex)
-	splited = splited.filter((item) => item)
+	let splitted = snippets_file.split(regex)
+	splitted = splitted.filter((item) => item)
 
-	return splited
+	return splitted
 }
