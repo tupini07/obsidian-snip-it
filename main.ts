@@ -12,12 +12,13 @@ export default class TextSnippets extends Plugin {
 		await this.loadSettings()
 
 		this.addSettingTab(new TextSnippetsSettingsTab(this.app, this))
+
 		//expected warning
-		var isLegacy = this.app.vault.config.legacyEditor
-		if (!isLegacy != this.settings.isWYSIWYG) {
-			this.settings.isWYSIWYG = !isLegacy
-			await this.saveSettings()
-		}
+		// var isLegacy = this.app.vault.config.legacyeditor
+		// if (!isLegacy != this.settings.isWYSIWYG) {
+		// 	this.settings.isWYSIWYG = !isLegacy
+		// 	await this.saveSettings()
+		// }
 
 		this.addCommand({
 			id: "text-snippets",
@@ -37,15 +38,6 @@ export default class TextSnippets extends Plugin {
 			// the callback has to be called through another function in order for 'this' to work
 			cm.on("keydown", (cm, event) => this.handleKeyDown(cm, event))
 		})
-		new Setting(containerEl)
-			.setName("Use Regex for Snippets")
-			.setDesc("Enable this to use regex patterns for snippet matching.")
-			.addToggle((toggle) =>
-				toggle.setValue(this.settings.isRegex).onChange(async (value) => {
-					this.settings.isRegex = value
-					await this.saveSettings()
-				})
-			)
 	}
 
 	async onunload() {
@@ -375,6 +367,15 @@ class TextSnippetsSettingsTab extends PluginSettingTab {
 						)
 						await this.plugin.saveSettings()
 					})
+			)
+		new Setting(containerEl)
+			.setName("Use Regex for Snippets")
+			.setDesc("Enable this to use regex patterns for snippet matching.")
+			.addToggle((toggle) =>
+				toggle.setValue(this.settings.isRegex).onChange(async (value) => {
+					this.settings.isRegex = value
+					await this.saveSettings()
+				})
 			)
 		new Setting(containerEl)
 			.setName("Cursor end position mark")
