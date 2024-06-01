@@ -33,8 +33,5 @@ export function updateSplit(
 	let splited = snippets_file.split(regex)
 	splited = splited.filter((item) => item)
 
-	return splited.map((snippet) => {
-		const [pattern, replacement] = snippet.split(" : ")
-		return { pattern, replacement, isRegex }
-	})
+	return splited
 }
