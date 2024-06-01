@@ -14,8 +14,8 @@ export function calculateCursorEndPos(
         if (rawEnd == -1) rawEnd = newStr.length
 
         var lastNl = newStr.substring(0, rawEnd).lastIndexOf(nlSymb)
-        if (lastNl != -1) var endPosIndex = rawEnd - lastNl - nlSymb.length - cursor.ch
-        else var endPosIndex = rawEnd
+        if (lastNl != -1) var endPosIndex = rawEnd - lastNl - nlSymb.length
+        else var endPosIndex = rawEnd - cursor.ch
     } else {
         var endPosIndex = 0
     }
