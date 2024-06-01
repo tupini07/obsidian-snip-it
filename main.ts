@@ -1,4 +1,5 @@
 import { App, Plugin, PluginSettingTab, Setting } from "obsidian"
+import { isWord } from "./utils"
 import { findSnippet, updateSplit } from "./snippetUtils"
 
 export default class TextSnippets extends Plugin {
@@ -69,20 +70,12 @@ export default class TextSnippets extends Plugin {
 		}
 	}
 
-	isWord(c: any): boolean {
-		//if character is not a whiespace or a delimiter
-		var notWord = " \t\n\r\v" + this.settings.wordDelimiters
-		if (notWord.indexOf(c) <= -1) {
-			return true
-		}
-		return false
-	}
 	SnippetsWordAt(cm: CodeMirror.Editor, pos: CodeMirror.Position): any {
 		var start = pos.ch,
 			end = start,
 			line = cm.getLine(pos.line)
-		while (start && this.isWord(line.charAt(start - 1))) --start
-		while (end < line.length && this.isWord(line.charAt(end))) ++end
+		while (start && isWord(line.charAt(start - 1), this.settings.wordDelimiters)) --start
+		while (end < line.length && isWord(line.charAt(end), this.settings.wordDelimiters)) ++end
 		var fr = { line: pos.line, ch: start }
 		var t = { line: pos.line, ch: end }
 		return { from: fr, to: t, word: line.slice(start, end) }
