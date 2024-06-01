@@ -409,9 +409,9 @@ class TextSnippetsSettingsTab extends PluginSettingTab {
 							value = "$nl$"
 						}
 						this.plugin.settings.newlineSymbol = value
-						updateSplit(
+						this.plugin.settings.snippets = updateSplit(
 							value,
-							this.plugin.settings.snippets,
+							this.plugin.settings.snippetsFile,
 							this.plugin.settings.isRegex
 						)
 						await this.plugin.saveSettings()
