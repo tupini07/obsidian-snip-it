@@ -372,9 +372,9 @@ class TextSnippetsSettingsTab extends PluginSettingTab {
 			.setName("Use Regex for Snippets")
 			.setDesc("Enable this to use regex patterns for snippet matching.")
 			.addToggle((toggle) =>
-				toggle.setValue(this.settings.isRegex).onChange(async (value) => {
-					this.settings.isRegex = value
-					await this.saveSettings()
+				toggle.setValue(this.plugin.settings.isRegex).onChange(async (value) => {
+					this.plugin.settings.isRegex = value
+					await this.plugin.saveSettings()
 				})
 			)
 		new Setting(containerEl)
