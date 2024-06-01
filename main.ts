@@ -75,17 +75,17 @@ export default class TextSnippets extends Plugin {
 	}
 
 	UpdateSplit(newlineSymbol: string) {
-		let nlSymb = newlineSymbol;
-		nlSymb = nlSymb.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
-		const rg = "(?<!" + nlSymb + ")\\n";
-		const regex = new RegExp(rg);
-		let splited = this.settings.snippets_file.split(regex);
-		splited = splited.filter((item) => item);
+		let nlSymb = newlineSymbol
+		nlSymb = nlSymb.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&")
+		const rg = "(?<!" + nlSymb + ")\\n"
+		const regex = new RegExp(rg)
+		let splited = this.settings.snippets_file.split(regex)
+		splited = splited.filter((item) => item)
 
 		this.settings.snippets = splited.map((snippet) => {
-			const [pattern, replacement] = snippet.split(" : ");
-			return { pattern, replacement, isRegex: this.settings.isRegex };
-		});
+			const [pattern, replacement] = snippet.split(" : ")
+			return { pattern, replacement, isRegex: this.settings.isRegex }
+		})
 	}
 
 	getSelectedText(editor: CodeMirror.Editor) {
@@ -155,19 +155,19 @@ export default class TextSnippets extends Plugin {
 		// var cursor = editor.getCursor('from');
 		// }
 
-		const snippets = this.settings.snippets;
+		const snippets = this.settings.snippets
 		for (const snippet of snippets) {
-			const [pattern, replacement] = snippet.split(" : ");
+			const [pattern, replacement] = snippet.split(" : ")
 			if (this.settings.isRegex) {
-				const regex = new RegExp(pattern);
+				const regex = new RegExp(pattern)
 				if (regex.test(selectedText)) {
-					newStr = selectedText.replace(regex, replacement);
-					break;
+					newStr = selectedText.replace(regex, replacement)
+					break
 				}
 			} else {
 				if (selectedText === pattern) {
-					newStr = replacement;
-					break;
+					newStr = replacement
+					break
 				}
 			}
 		}
