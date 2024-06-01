@@ -1,4 +1,5 @@
 import { findSnippet, updateSplit } from './snippetUtils';
+import { isWord } from './utils';
 
 describe('findSnippet', () => {
     it('should return the replacement for a matching snippet without regex', () => {
@@ -47,6 +48,26 @@ describe('findSnippet', () => {
         const isRegex = true;
         const result = findSnippet(selectedText, snippets, isRegex);
         expect(result).toBe('universe');
+    });
+});
+
+describe('isWord', () => {
+    const wordDelimiters = "$()[]{}<>,.!?;:'\"\\/";
+
+    it('should return true for a character that is not a whitespace or a delimiter', () => {
+        expect(isWord('a', wordDelimiters)).toBe(true);
+    });
+
+    it('should return false for a whitespace character', () => {
+        expect(isWord(' ', wordDelimiters)).toBe(false);
+    });
+
+    it('should return false for a delimiter character', () => {
+        expect(isWord('$', wordDelimiters)).toBe(false);
+    });
+
+    it('should return true for a character that is not in the delimiters', () => {
+        expect(isWord('b', wordDelimiters)).toBe(true);
     });
 });
 
