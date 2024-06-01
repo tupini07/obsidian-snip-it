@@ -345,6 +345,8 @@ export default class TextSnippets extends Plugin {
 		}
 		return false
 	}
+	isRegex: boolean
+	isRegex: false
 }
 
 interface TextSnippetsSettings {
