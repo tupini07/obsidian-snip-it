@@ -1,6 +1,6 @@
 import { App, Plugin, PluginSettingTab, Setting } from "obsidian"
-import { findSnippet, updateSplit } from "./snippetUtils"
 import { calculateCursorEndPos } from "./cursorUtils"
+import { findSnippet, updateSplit } from "./snippetUtils"
 import { SnippetsWordAt } from "./wordUtils"
 
 export default class TextSnippets extends Plugin {
@@ -92,7 +92,6 @@ export default class TextSnippets extends Plugin {
 		}
 	}
 
-
 	insertSnippet(
 		key: string = "",
 		snippetStartpos: CodeMirror.Position = { ch: -1, line: -1 }
@@ -138,7 +137,7 @@ export default class TextSnippets extends Plugin {
 
 		//find end position
 		var endPosition = { nlinesCount: 0, position: 0 }
-		newStr = this.calculateCursorEndPos(newStr, cursor, endPosition)
+		newStr = calculateCursorEndPos(newStr, cursor, endPosition, this.settings)
 		if (newStr.indexOf(stopSymbol) != -1) stopFound = true
 		if (newStr.indexOf(pasteSymbol) != -1) snippetStartpos = cursor
 
