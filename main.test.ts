@@ -1,4 +1,5 @@
-import TextSnippets from "./main.ts" // Replace this with the correct import statement
+import TextSnippets from "./main"
+import * as CodeMirror from "codemirror"
 
 describe("TextSnippets", () => {
 	let textSnippets: TextSnippets
@@ -13,7 +14,8 @@ describe("TextSnippets", () => {
 	})
 
 	afterEach(() => {
-		editor.toTextArea()
+		// Assuming you want to remove the editor instance after each test
+		editor.getWrapperElement().remove()
 	})
 
 	it("should find a snippet when the selected text matches a pattern", () => {
