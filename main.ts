@@ -151,13 +151,20 @@ export default class TextSnippets extends Plugin {
 		// var cursor = editor.getCursor('from');
 		// }
 
-		var i
-		var snippets = this.settings.snippets
-		for (i in snippets) {
-			var snippet = snippets[i].split(" : ")
-
-			if (selectedText == snippet[0]) {
-				newStr = snippet[1]
+		const snippets = this.settings.snippets;
+		for (const snippet of snippets) {
+			const [pattern, replacement] = snippet.split(" : ");
+			if (this.settings.isRegex) {
+				const regex = new RegExp(pattern);
+				if (regex.test(selectedText)) {
+					newStr = selectedText.replace(regex, replacement);
+					break;
+				}
+			} else {
+				if (selectedText === pattern) {
+					newStr = replacement;
+					break;
+				}
 			}
 		}
 		return newStr
