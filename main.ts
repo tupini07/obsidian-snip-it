@@ -75,13 +75,17 @@ export default class TextSnippets extends Plugin {
 	}
 
 	UpdateSplit(newlineSymbol: string) {
-		var nlSymb = newlineSymbol
-		var nlSymb = nlSymb.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&")
-		var rg = "(?<!" + nlSymb + ")\\n"
-		const regex = new RegExp(rg)
-		var splited = this.settings.snippets_file.split(regex)
-		splited = splited.filter((item) => item)
-		this.settings.snippets = splited
+		let nlSymb = newlineSymbol;
+		nlSymb = nlSymb.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
+		const rg = "(?<!" + nlSymb + ")\\n";
+		const regex = new RegExp(rg);
+		let splited = this.settings.snippets_file.split(regex);
+		splited = splited.filter((item) => item);
+
+		this.settings.snippets = splited.map((snippet) => {
+			const [pattern, replacement] = snippet.split(" : ");
+			return { pattern, replacement, isRegex: this.settings.isRegex };
+		});
 	}
 
 	getSelectedText(editor: CodeMirror.Editor) {
