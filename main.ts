@@ -41,9 +41,9 @@ export default class TextSnippets extends Plugin {
 			.setName("Use Regex for Snippets")
 			.setDesc("Enable this to use regex patterns for snippet matching.")
 			.addToggle((toggle) =>
-				toggle.setValue(this.plugin.settings.isRegex).onChange(async (value) => {
-					this.plugin.settings.isRegex = value
-					await this.plugin.saveSettings()
+				toggle.setValue(this.settings.isRegex).onChange(async (value) => {
+					this.settings.isRegex = value
+					await this.saveSettings()
 				})
 			)
 	}
@@ -367,11 +367,11 @@ class TextSnippetsSettingsTab extends PluginSettingTab {
 					.setPlaceholder("before : after")
 					.setValue(this.plugin.settings.snippetsFile)
 					.onChange(async (value) => {
-						this.plugin.settings.snippetsFile = value
-						this.plugin.settings.snippets = updateSplit(
-							this.plugin.settings.newlineSymbol,
-							this.plugin.settings.snippetsFile,
-							this.plugin.settings.isRegex
+						this.settings.snippetsFile = value
+						this.settings.snippets = updateSplit(
+							this.settings.newlineSymbol,
+							this.settings.snippetsFile,
+							this.settings.isRegex
 						)
 						await this.plugin.saveSettings()
 					})
