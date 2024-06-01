@@ -1,5 +1,5 @@
 import { App, Plugin, PluginSettingTab, Setting } from "obsidian"
-import { findSnippet } from "./snippetUtils"
+import { findSnippet, UpdateSplit } from "./snippetUtils"
 
 export default class TextSnippets extends Plugin {
 	settings: TextSnippetsSettings
@@ -67,19 +67,6 @@ export default class TextSnippets extends Plugin {
 		await this.saveData(this.settings)
 	}
 
-	UpdateSplit(newlineSymbol: string) {
-		let nlSymb = newlineSymbol
-		nlSymb = nlSymb.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&")
-		const rg = "(?<!" + nlSymb + ")\\n"
-		const regex = new RegExp(rg)
-		let splited = this.settings.snippets_file.split(regex)
-		splited = splited.filter((item) => item)
-
-		this.settings.snippets = splited.map((snippet) => {
-			const [pattern, replacement] = snippet.split(" : ")
-			return { pattern, replacement, isRegex: this.settings.isRegex }
-		})
-	}
 
 	getSelectedText(editor: CodeMirror.Editor) {
 		if (editor.somethingSelected()) {
@@ -383,7 +370,7 @@ class TextSnippetsSettingsTab extends PluginSettingTab {
 					.setValue(this.plugin.settings.snippets_file)
 					.onChange(async (value) => {
 						this.plugin.settings.snippets_file = value
-						this.plugin.UpdateSplit(this.plugin.settings.newlineSymbol)
+						this.plugin.settings.snippets = UpdateSplit(this.plugin.settings.newlineSymbol, this.plugin.settings.snippets_file, this.plugin.settings.isRegex)
 						await this.plugin.saveSettings()
 					})
 			)

@@ -17,3 +17,16 @@ export function findSnippet(selectedText: string, snippets: string[], isRegex: b
 	}
 	return newStr;
 }
+export function UpdateSplit(newlineSymbol: string, snippets_file: string, isRegex: boolean) {
+	let nlSymb = newlineSymbol;
+	nlSymb = nlSymb.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
+	const rg = "(?<!" + nlSymb + ")\\n";
+	const regex = new RegExp(rg);
+	let splited = snippets_file.split(regex);
+	splited = splited.filter((item) => item);
+
+	return splited.map((snippet) => {
+		const [pattern, replacement] = snippet.split(" : ");
+		return { pattern, replacement, isRegex };
+	});
+}
