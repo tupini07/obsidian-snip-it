@@ -53,6 +53,15 @@ export default class TextSnippets extends Plugin {
 					await this.plugin.saveSettings()
 				})
 			)
+		new Setting(containerEl)
+			.setName("Use Regex for Snippets")
+			.setDesc("Enable this to use regex patterns for snippet matching.")
+			.addToggle((toggle) =>
+				toggle.setValue(this.plugin.settings.isRegex).onChange(async (value) => {
+					this.plugin.settings.isRegex = value
+					await this.plugin.saveSettings()
+				})
+			)
 	}
 
 	async onunload() {
