@@ -367,11 +367,11 @@ class TextSnippetsSettingsTab extends PluginSettingTab {
 					.setPlaceholder("before : after")
 					.setValue(this.plugin.settings.snippetsFile)
 					.onChange(async (value) => {
-						this.settings.snippetsFile = value
-						this.settings.snippets = updateSplit(
-							this.settings.newlineSymbol,
-							this.settings.snippetsFile,
-							this.settings.isRegex
+						this.plugin.settings.snippetsFile = value
+						this.plugin.settings.snippets = updateSplit(
+							this.plugin.settings.newlineSymbol,
+							this.plugin.settings.snippetsFile,
+							this.plugin.settings.isRegex
 						)
 						await this.plugin.saveSettings()
 					})
@@ -409,7 +409,11 @@ class TextSnippetsSettingsTab extends PluginSettingTab {
 							value = "$nl$"
 						}
 						this.plugin.settings.newlineSymbol = value
-						updateSplit(value, this.settings.snippets, this.settings.isRegex)
+						updateSplit(
+							value,
+							this.plugin.settings.snippets,
+							this.plugin.settings.isRegex
+						)
 						await this.plugin.saveSettings()
 					})
 			)
