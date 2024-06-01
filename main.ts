@@ -1,5 +1,5 @@
 import { App, Plugin, PluginSettingTab, Setting } from "obsidian"
-import { findSnippet, UpdateSplit } from "./snippetUtils"
+import { findSnippet, updateSplit } from "./snippetUtils"
 
 export default class TextSnippets extends Plugin {
 	settings: TextSnippetsSettings
@@ -66,7 +66,6 @@ export default class TextSnippets extends Plugin {
 	async saveSettings() {
 		await this.saveData(this.settings)
 	}
-
 
 	getSelectedText(editor: CodeMirror.Editor) {
 		if (editor.somethingSelected()) {
@@ -316,7 +315,7 @@ export default class TextSnippets extends Plugin {
 }
 
 interface TextSnippetsSettings {
-	snippets_file: string
+	snippetsFile: string
 	snippets: string[]
 	endSymbol: string
 	newlineSymbol: string
@@ -330,7 +329,7 @@ interface TextSnippetsSettings {
 }
 
 const DEFAULT_SETTINGS: TextSnippetsSettings = {
-	snippets_file:
+	snippetsFile:
 		"snippets : It is an obsidian plugin, that replaces your selected text.",
 	snippets: ["snippets : It is an obsidian plugin, that replaces your selected text."],
 	endSymbol: "$end$",
@@ -367,10 +366,14 @@ class TextSnippetsSettingsTab extends PluginSettingTab {
 			.addTextArea((text) =>
 				text
 					.setPlaceholder("before : after")
-					.setValue(this.plugin.settings.snippets_file)
+					.setValue(this.plugin.settings.snippetsFile)
 					.onChange(async (value) => {
-						this.plugin.settings.snippets_file = value
-						this.plugin.settings.snippets = UpdateSplit(this.plugin.settings.newlineSymbol, this.plugin.settings.snippets_file, this.plugin.settings.isRegex)
+						this.plugin.settings.snippetsFile = value
+						this.plugin.settings.snippets = updateSplit(
+							this.plugin.settings.newlineSymbol,
+							this.plugin.settings.snippetsFile,
+							this.plugin.settings.isRegex
+						)
 						await this.plugin.saveSettings()
 					})
 			)
@@ -407,7 +410,7 @@ class TextSnippetsSettingsTab extends PluginSettingTab {
 							value = "$nl$"
 						}
 						this.plugin.settings.newlineSymbol = value
-						this.plugin.UpdateSplit(value)
+						updateSplit(value, this.settings.snippets, this.settings.isRegex)
 						await this.plugin.saveSettings()
 					})
 			)
