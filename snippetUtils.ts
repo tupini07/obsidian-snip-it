@@ -28,8 +28,8 @@ export function updateSplit(
 ) {
 	let nlSymb = newlineSymbol
 	nlSymb = nlSymb.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&")
-	const rg = "(?<!" + nlSymb + ")\\n"
-	const regex = new RegExp(rg)
+	const rg = nlSymb + "\\n" + "|" + nlSymb
+	const regex = new RegExp(rg, "g")
 	let splited = snippets_file.split(regex)
 	splited = splited.filter((item) => item)
 
