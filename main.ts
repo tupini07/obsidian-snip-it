@@ -1,7 +1,7 @@
 import { App, Plugin, PluginSettingTab, Setting } from "obsidian"
 import { calculateCursorEndPos } from "./cursorUtils"
 import { findSnippet, updateSplit } from "./snippetUtils"
-import { SnippetsWordAt } from "./wordUtils"
+import { getWordBoundaries } from "./wordUtils"
 
 export default class TextSnippets extends Plugin {
 	settings: TextSnippetsSettings
@@ -65,30 +65,9 @@ export default class TextSnippets extends Plugin {
 		if (editor.somethingSelected()) {
 			return editor.getSelection()
 		} else {
-			var wordBoundaries = this.getWordBoundaries(editor)
+			var wordBoundaries = getWordBoundaries(editor, this.settings.wordDelimiters)
 			editor.getDoc().setSelection(wordBoundaries.start, wordBoundaries.end)
 			return editor.getSelection()
-		}
-	}
-
-	getWordBoundaries(editor: CodeMirror.Editor) {
-		var cursor = editor.getCursor()
-		var line = cursor.line
-		var ch = cursor.ch
-
-		var word = SnippetsWordAt(editor, cursor, this.settings.wordDelimiters)
-		var wordStart = word.from.ch
-		var wordEnd = word.to.ch
-
-		return {
-			start: {
-				line: line,
-				ch: wordStart,
-			},
-			end: {
-				line: line,
-				ch: wordEnd,
-			},
 		}
 	}
 
@@ -106,7 +85,7 @@ export default class TextSnippets extends Plugin {
 		if (wasSelection) {
 			wordBoundaries = { start: cursor, end: editor.getCursor("to") }
 		} else {
-			wordBoundaries = this.getWordBoundaries(editor)
+			wordBoundaries = getWordBoundaries(editor, this.settings.wordDelimiters)
 		}
 		var stopSymbol = this.settings.stopSymbol
 		var pasteSymbol = this.settings.pasteSymbol
