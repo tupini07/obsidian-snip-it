@@ -1,10 +1,17 @@
-import { findSnippet, updateSplit } from './snippetUtils';
+import { findSnippet } from './snippetUtils';
 import { isWord } from './utils';
+
+interface SnippetWithHotkey {
+    pattern: string
+    replacement: string
+    hotkey?: string
+    id?: string
+}
 
 describe('findSnippet', () => {
     it('should return the replacement for a matching snippet without regex', () => {
         const selectedText = 'hello';
-        const snippets = ['hello : world'];
+        const snippets: SnippetWithHotkey[] = [{ pattern: 'hello', replacement: 'world', id: '1' }];
         const isRegex = false;
         const result = findSnippet(selectedText, snippets, isRegex);
         expect(result).toBe('world');
@@ -12,7 +19,7 @@ describe('findSnippet', () => {
 
     it('should return the replacement for a matching snippet with regex', () => {
         const selectedText = 'hello123';
-        const snippets = ['hello\\d+ : world'];
+        const snippets: SnippetWithHotkey[] = [{ pattern: 'hello\\d+', replacement: 'world', id: '1' }];
         const isRegex = true;
         const result = findSnippet(selectedText, snippets, isRegex);
         expect(result).toBe('world');
@@ -20,7 +27,7 @@ describe('findSnippet', () => {
 
     it('should return an empty string if no snippet matches without regex', () => {
         const selectedText = 'hello';
-        const snippets = ['hi : world'];
+        const snippets: SnippetWithHotkey[] = [{ pattern: 'hi', replacement: 'world', id: '1' }];
         const isRegex = false;
         const result = findSnippet(selectedText, snippets, isRegex);
         expect(result).toBe('');
@@ -28,7 +35,7 @@ describe('findSnippet', () => {
 
     it('should return an empty string if no snippet matches with regex', () => {
         const selectedText = 'hello';
-        const snippets = ['hi\\d+ : world'];
+        const snippets: SnippetWithHotkey[] = [{ pattern: 'hi\\d+', replacement: 'world', id: '1' }];
         const isRegex = true;
         const result = findSnippet(selectedText, snippets, isRegex);
         expect(result).toBe('');
@@ -36,7 +43,10 @@ describe('findSnippet', () => {
 
     it('should handle multiple snippets and return the first matching one without regex', () => {
         const selectedText = 'hello';
-        const snippets = ['hi : world', 'hello : universe'];
+        const snippets: SnippetWithHotkey[] = [
+            { pattern: 'hi', replacement: 'world', id: '1' },
+            { pattern: 'hello', replacement: 'universe', id: '2' }
+        ];
         const isRegex = false;
         const result = findSnippet(selectedText, snippets, isRegex);
         expect(result).toBe('universe');
@@ -44,7 +54,10 @@ describe('findSnippet', () => {
 
     it('should handle multiple snippets and return the first matching one with regex', () => {
         const selectedText = 'hello123';
-        const snippets = ['hi\\d+ : world', 'hello\\d+ : universe'];
+        const snippets: SnippetWithHotkey[] = [
+            { pattern: 'hi\\d+', replacement: 'world', id: '1' },
+            { pattern: 'hello\\d+', replacement: 'universe', id: '2' }
+        ];
         const isRegex = true;
         const result = findSnippet(selectedText, snippets, isRegex);
         expect(result).toBe('universe');
@@ -52,18 +65,17 @@ describe('findSnippet', () => {
 
     it('should evaluate dynamic expressions in snippet replacements', () => {
         const selectedText = 'today';
-        const snippets = ['today : Today is {{date}}'];
+        const snippets: SnippetWithHotkey[] = [{ pattern: 'today', replacement: 'Today is {{date}}', id: '1' }];
         const isRegex = false;
         const mockApp = {} as any;
         const mockFile = { basename: 'Test' } as any;
         const result = findSnippet(selectedText, snippets, isRegex, mockApp, mockFile);
         expect(result).toContain('Today is ');
-        // Since we're not mocking moment properly, the expression might remain
     });
 
     it('should evaluate multiple dynamic expressions in snippet replacements', () => {
         const selectedText = 'now';
-        const snippets = ['now : {{date}} at {{time}}'];
+        const snippets: SnippetWithHotkey[] = [{ pattern: 'now', replacement: '{{date}} at {{time}}', id: '1' }];
         const isRegex = false;
         const mockApp = {} as any;
         const mockFile = { basename: 'Test' } as any;
@@ -73,7 +85,7 @@ describe('findSnippet', () => {
 
     it('should leave unknown dynamic expressions unchanged', () => {
         const selectedText = 'test';
-        const snippets = ['test : Result with {{unknown}} variable'];
+        const snippets: SnippetWithHotkey[] = [{ pattern: 'test', replacement: 'Result with {{unknown}} variable', id: '1' }];
         const isRegex = false;
         const mockApp = {} as any;
         const mockFile = { basename: 'Test' } as any;
@@ -83,10 +95,23 @@ describe('findSnippet', () => {
 
     it('should work without app instance for backward compatibility', () => {
         const selectedText = 'hello';
-        const snippets = ['hello : world'];
+        const snippets: SnippetWithHotkey[] = [{ pattern: 'hello', replacement: 'world', id: '1' }];
         const isRegex = false;
         const result = findSnippet(selectedText, snippets, isRegex);
         expect(result).toBe('world');
+    });
+
+    it('should handle snippets with hotkeys (hotkey field should not affect matching)', () => {
+        const selectedText = 'test';
+        const snippets: SnippetWithHotkey[] = [{ 
+            pattern: 'test', 
+            replacement: 'success', 
+            hotkey: 'Alt+T',
+            id: '1' 
+        }];
+        const isRegex = false;
+        const result = findSnippet(selectedText, snippets, isRegex);
+        expect(result).toBe('success');
     });
 });
 
@@ -107,39 +132,5 @@ describe('isWord', () => {
 
     it('should return true for a character that is not in the delimiters', () => {
         expect(isWord('b', wordDelimiters)).toBe(true);
-    });
-});
-
-describe('updateSplit', () => {
-    it('should split snippets file correctly without regex', () => {
-        const newlineSymbol = '$nl$';
-        const snippetsFile = 'snippet1 : result1$nl$snippet2 : result2';
-        const isRegex = false;
-        const result = updateSplit(newlineSymbol, snippetsFile, isRegex);
-        expect(result).toEqual(['snippet1 : result1', 'snippet2 : result2']);
-    });
-
-    it('should split snippets file correctly with regex', () => {
-        const newlineSymbol = '$nl$';
-        const snippetsFile = 'snippet1 : result1$nl$snippet2 : result2';
-        const isRegex = true;
-        const result = updateSplit(newlineSymbol, snippetsFile, isRegex);
-        expect(result).toEqual(['snippet1 : result1', 'snippet2 : result2']);
-    });
-
-    it('should handle empty lines correctly', () => {
-        const newlineSymbol = '$nl$';
-        const snippetsFile = 'snippet1 : result1$nl$$nl$snippet2 : result2';
-        const isRegex = false;
-        const result = updateSplit(newlineSymbol, snippetsFile, isRegex);
-        expect(result).toEqual(['snippet1 : result1', 'snippet2 : result2']);
-    });
-
-    it('should handle special characters in newline symbol', () => {
-        const newlineSymbol = '$nl$';
-        const snippetsFile = 'snippet1 : result1$nl$snippet2 : result2';
-        const isRegex = false;
-        const result = updateSplit(newlineSymbol, snippetsFile, isRegex);
-        expect(result).toEqual(['snippet1 : result1', 'snippet2 : result2']);
     });
 });
