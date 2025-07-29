@@ -2,6 +2,7 @@ import { App, Plugin, PluginSettingTab, Setting } from "obsidian"
 import { calculateCursorEndPos } from "./cursorUtils"
 import { findSnippet, updateSplit } from "./snippetUtils"
 import { getWordBoundaries } from "./wordUtils"
+import moment from "moment"
 
 export default class TextSnippets extends Plugin {
 	settings: TextSnippetsSettings
@@ -11,6 +12,11 @@ export default class TextSnippets extends Plugin {
 
 	async onload() {
 		console.log("Loading snippets plugin")
+		
+		// Setup moment.js for dynamic expressions
+		window.moment = moment;
+		console.log("DEBUG: Set up window.moment in plugin load");
+		
 		await this.loadSettings()
 
 		this.addSettingTab(new TextSnippetsSettingsTab(this.app, this))
@@ -94,7 +100,11 @@ export default class TextSnippets extends Plugin {
 		const selectedText = this.getSelectedText(editor)
 		const snippets = this.settings.snippets
 		const isRegex = this.settings.isRegex
-		newStr = findSnippet(selectedText, snippets, isRegex)
+		
+		// Get the active file for dynamic variable resolution
+		const activeFile = this.app.workspace.getActiveFile()
+		
+		newStr = findSnippet(selectedText, snippets, isRegex, this.app, activeFile)
 		cursor = editor.getCursor("from")
 
 		//proceed Tab and Spacebar

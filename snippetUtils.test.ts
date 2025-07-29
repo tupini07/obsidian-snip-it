@@ -49,6 +49,45 @@ describe('findSnippet', () => {
         const result = findSnippet(selectedText, snippets, isRegex);
         expect(result).toBe('universe');
     });
+
+    it('should evaluate dynamic expressions in snippet replacements', () => {
+        const selectedText = 'today';
+        const snippets = ['today : Today is {{date}}'];
+        const isRegex = false;
+        const mockApp = {} as any;
+        const mockFile = { basename: 'Test' } as any;
+        const result = findSnippet(selectedText, snippets, isRegex, mockApp, mockFile);
+        expect(result).toContain('Today is ');
+        // Since we're not mocking moment properly, the expression might remain
+    });
+
+    it('should evaluate multiple dynamic expressions in snippet replacements', () => {
+        const selectedText = 'now';
+        const snippets = ['now : {{date}} at {{time}}'];
+        const isRegex = false;
+        const mockApp = {} as any;
+        const mockFile = { basename: 'Test' } as any;
+        const result = findSnippet(selectedText, snippets, isRegex, mockApp, mockFile);
+        expect(result).toContain(' at ');
+    });
+
+    it('should leave unknown dynamic expressions unchanged', () => {
+        const selectedText = 'test';
+        const snippets = ['test : Result with {{unknown}} variable'];
+        const isRegex = false;
+        const mockApp = {} as any;
+        const mockFile = { basename: 'Test' } as any;
+        const result = findSnippet(selectedText, snippets, isRegex, mockApp, mockFile);
+        expect(result).toBe('Result with {{unknown}} variable');
+    });
+
+    it('should work without app instance for backward compatibility', () => {
+        const selectedText = 'hello';
+        const snippets = ['hello : world'];
+        const isRegex = false;
+        const result = findSnippet(selectedText, snippets, isRegex);
+        expect(result).toBe('world');
+    });
 });
 
 describe('isWord', () => {

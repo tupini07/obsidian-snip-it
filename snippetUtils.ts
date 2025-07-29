@@ -1,7 +1,12 @@
+import { evaluateDynamicExpressions } from "./dynamicUtils"
+import { App, TFile } from "obsidian"
+
 export function findSnippet(
 	selectedText: string,
 	snippets: string[],
-	isRegex: boolean
+	isRegex: boolean,
+	app?: App,
+	activeFile?: TFile
 ): string {
 	let newStr = ""
 	for (const snippet of snippets) {
@@ -19,6 +24,12 @@ export function findSnippet(
 			}
 		}
 	}
+	
+	// Evaluate dynamic expressions in the replacement text
+	if (newStr && app) {
+		newStr = evaluateDynamicExpressions(newStr, app, activeFile)
+	}
+	
 	return newStr
 }
 export function updateSplit(
